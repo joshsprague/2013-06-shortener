@@ -56,7 +56,7 @@ describe "URL Shortener" do
       post '/new', :url => 'www.hackreactor.com'
       short_link = last_response.body
 
-      get '/' + short_link.split('/')[1]
+      get '/' + short_link.split('/')[0]
       last_response.should be_redirect 
       follow_redirect!
       last_request.url.should == 'http://www.hackreactor.com/'
