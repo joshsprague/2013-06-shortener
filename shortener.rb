@@ -86,11 +86,14 @@ post '/new' do
     #temp = request.url.slice[8,4]
     # binding.pry
     long = request.params['url']
-    short = request.body.read[8,4]
-    link = Link.new original_link: long, short_link: short
-    link.save
+    selector = Link.where(original_link: long)[0]
+    if (!selector)
+        short = request.body.read[8,4]
+        link = Link.new original_link: long, short_link: short
+        link.save
+    end
     # Return shortened URL
-    [201, short]
+    [201, Link.where(original_link: long)[0].short_link]
 end
 
 
