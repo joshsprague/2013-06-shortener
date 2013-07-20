@@ -69,7 +69,11 @@ get '/:path_info' do
     temp = request.path_info
     selector = Link.where(short_link: temp[1..5])[0]
     # binding.pry
-    redirect to ("http://" + selector.original_link)
+    if selector
+        redirect to ("http://" + selector.original_link)
+    else
+        [404]
+    end
 end
 
 # Check input url
