@@ -36,21 +36,60 @@ form = <<-eos
     </script>
 eos
 
-# Models to Access the database 
-# through ActiveRecord.  Define 
+# Models to Access the database
+# through ActiveRecord.  Define
 # associations here if need be
 #
 # http://guides.rubyonrails.org/association_basics.html
 class Link < ActiveRecord::Base
+  attr_accessible :original_link, :short_link
 end
 
+# Check for root or shortened link
 get '/' do
     form
 end
 
+get '/jquery.js' do
+    send_file 'jquery.js'
+end
+
+get '/favicon.ico' do
+    #
+end
+
+get '/jquery.min.map' do
+    #
+end
+
+# If shortened link, extract URL extension
+# then check database for redirect
+# If shortened URL does not exist, return 404
+get '/:path_info' do
+    temp = request.path_info
+    selector = Link.where(short_link: temp[1..5])[0]
+    # binding.pry
+    redirect to ("http://" + selector.original_link)
+end
+
+# Check input url
+# If not in database, create new shortened URL
+# If in database return previous shortened URL
+
 post '/new' do
     # PUT CODE HERE TO CREATE NEW SHORTENED LINKS
+    # Find URL from request body
+    #temp = request.url.slice[8,4]
+    # binding.pry
+    long = request.params['url']
+    short = request.body.read[8,4]
+    link = Link.new original_link: long, short_link: short
+    link.save
+    # Return shortened URL
+    [201, short]
 end
+
+
 
 get '/jquery.js' do
     send_file 'jquery.js'
